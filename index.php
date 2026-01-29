@@ -19,6 +19,7 @@ $result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
     <th>ID</th>
     <th>Title</th>
     <th>Details</th>
+    <th>Photo</th>
     <th>Actions</th>
   </tr>
 
@@ -27,6 +28,23 @@ $result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
   <td><?= $row['id'] ?></td>
   <td><?= htmlspecialchars($row['title']) ?></td>
   <td><?= htmlspecialchars($row['details']) ?></td>
+
+  <!-- ✅ PHOTO COLUMN -->
+  <td>
+<?php
+$image = $row['image_name'];
+
+if (!$image) {
+    $image = "placeholder.png";
+}
+?>
+<img src="images/<?= htmlspecialchars($image) ?>"
+     alt="Task Image"
+     width="80">
+</td>
+
+
+  <!-- ✅ ACTIONS COLUMN -->
   <td>
     <a href="edit.php?id=<?= $row['id'] ?>">Edit</a> |
     <a href="delete.php?id=<?= $row['id'] ?>"
