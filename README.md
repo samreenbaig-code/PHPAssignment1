@@ -1,4 +1,3 @@
-## PHPAssignment1 – Task Manager
 
 ## Description
 This is a PHP and MySQL Task Manager application built using XAMPP.
@@ -20,3 +19,10 @@ It implements CRUD functionality similar to the Contact Manager covered in class
 1. Start Apache and MySQL in XAMPP
 2. Place project in htdocs
 3. Open http://localhost/PHPAssignment1/
+<<<<<<< HEAD
+=======
+## Assignment 2
+This assignment continues Assignment 1 by ensuring full CRUD
+functionality (Add, Update, Delete) using PHP and MySQL.
+No image upload or placeholder logic is implemented, as discussed in class.
+>>>>>>> 396ce5d (Assignment 2: add update delete and UI improvements)

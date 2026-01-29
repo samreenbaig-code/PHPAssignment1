@@ -1,0 +1,101 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px;
+  background: #f4f6f8;
+}
+
+/* Title */
+h1 {
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Add button */
+.btn {
+  display: inline-block;
+  margin-bottom: 15px;
+  background: #3498db;
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: #2980b9;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Table header */
+th {
+  background: #2c3e50;
+  color: white;
+  padding: 14px;
+  text-align: left;
+}
+
+/* Table cells */
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Row hover effect */
+tr:hover {
+  background: #f1f7ff;
+}
+
+/* Action links */
+td a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+td a:hover {
+  color: #e74c3c;
+}
+
+/* Form styling */
+form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 20px auto;
+  display: grid;
+  gap: 12px;
+}
+
+input, textarea {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e8449;
+}
