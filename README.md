@@ -26,3 +26,18 @@ This assignment continues Assignment 1 by ensuring full CRUD
 functionality (Add, Update, Delete) using PHP and MySQL.
 No image upload or placeholder logic is implemented, as discussed in class.
 >>>>>>> 396ce5d (Assignment 2: add update delete and UI improvements)
+>>>>>>> PHP Assignment 3 – Contact Manager
+
+Features:
+- CRUD operations
+- Categories table with foreign key
+- Image upload
+- Task details page
+- Category dropdown (dynamic)
+- MySQL database included (phpassignment1.sql)
+
+How to run:
+1. Import phpassignment1.sql into phpMyAdmin
+2. Place project in htdocs
+3. Open http://localhost/PHPAssignment1
+
