@@ -1,7 +1,14 @@
 <?php
 include "db.php";
 
-$result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
+$result = $conn->query("
+    SELECT tasks.*, categories.name AS category_name
+    FROM tasks
+    LEFT JOIN categories
+    ON tasks.category_id = categories.id
+    ORDER BY tasks.id DESC
+");
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,6 +26,7 @@ $result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
     <th>ID</th>
     <th>Title</th>
     <th>Details</th>
+    <th>Category</th>
     <th>Photo</th>
     <th>Actions</th>
   </tr>
@@ -28,27 +36,18 @@ $result = $conn->query("SELECT * FROM tasks ORDER BY id DESC");
   <td><?= $row['id'] ?></td>
   <td><?= htmlspecialchars($row['title']) ?></td>
   <td><?= htmlspecialchars($row['details']) ?></td>
+  <td><?= htmlspecialchars($row['category_name']) ?></td>
 
-  <!-- ✅ PHOTO COLUMN -->
   <td>
-<?php
-$image = $row['image_name'];
+    <img src="images/<?= htmlspecialchars($row['image_name']) ?>" width="80">
+  </td>
 
-if (!$image) {
-    $image = "placeholder.png";
-}
-?>
-<img src="images/<?= htmlspecialchars($image) ?>"
-     alt="Task Image"
-     width="80">
-</td>
-
-
-  <!-- ✅ ACTIONS COLUMN -->
   <td>
-    <a href="edit.php?id=<?= $row['id'] ?>">Edit</a> |
-    <a href="delete.php?id=<?= $row['id'] ?>"
-       onclick="return confirm('Delete this task?')">Delete</a>
+    <a href="task_detail.php?id=<?php echo $row['id']; ?>">View</a>
+
+<a href="edit.php?id=<?= $row['id'] ?>">Edit</a> |
+<a href="delete.php?id=<?= $row['id'] ?>">Delete</a>
+
   </td>
 </tr>
 <?php endwhile; ?>

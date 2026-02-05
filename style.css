@@ -206,3 +206,57 @@ button {
 button:hover {
   background: #219150;
 }
+
+/* ===== DETAIL PAGE CARD ===== */
+
+.detail-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+.detail-card{
+    background:#ffffff;
+    width:420px;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    text-align:center;
+}
+
+.detail-card h2{
+    margin-bottom:20px;
+}
+
+.detail-image img{
+    width: 220px;        /* fixed width */
+    height: 220px;       /* fixed height */
+    object-fit: cover;   /* makes all images same size */
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+}
+/* FORCE SAME IMAGE SIZE EVERYWHERE */
+
+.detail-info{
+    text-align:left;
+    margin-top:10px;
+}
+
+.detail-info p{
+    margin:10px 0;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:10px 20px;
+    background:#3b82f6;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+}
+.back-btn:hover{
+    background:#2563eb;
+}
