@@ -26,7 +26,7 @@ This assignment continues Assignment 1 by ensuring full CRUD
 functionality (Add, Update, Delete) using PHP and MySQL.
 No image upload or placeholder logic is implemented, as discussed in class.
 >>>>>>> 396ce5d (Assignment 2: add update delete and UI improvements)
->>>>>>> PHP Assignment 3 – Contact Manager
+## PHP Assignment 3 – Task Manager
 
 Features:
 - CRUD operations
