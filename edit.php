@@ -1,17 +1,37 @@
 <?php
+session_start();
 include "db.php";
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
-$id = $_GET['id'];
+/* Protect page */
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
-/* Get task data */
+$id = $_GET['id'] ?? 0;
+
+/* Get existing task */
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE id=?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 $task = $result->fetch_assoc();
 
+if (!$task) {
+    die("Task not found.");
+}
+if ($_FILES['image']['size'] > 2 * 1024 * 1024) {
+    $error = "Image must be less than 2MB.";
+}
+
 /* Load categories */
 $categories = $conn->query("SELECT * FROM categories ORDER BY name");
+
+$error = "";
 
 /* Update record */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -19,21 +39,56 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $title = trim($_POST['title']);
     $details = trim($_POST['details']);
     $category_id = $_POST['category_id'];
-    $image_name = $_POST['image_name'];
 
-    $stmt = $conn->prepare("
-        UPDATE tasks
-        SET title=?, details=?, category_id=?, image_name=?
-        WHERE id=?
-    ");
+    /* Validation */
+    if (empty($title) || empty($category_id)) {
+        $error = "Title and Category are required.";
+    } else {
 
-    $stmt->bind_param("ssisi", $title, $details, $category_id, $image_name, $id);
-    $stmt->execute();
+        $image_name = $task['image_name']; // keep old image by default
 
-    header("Location: index.php");
-    exit;
+        /* Check if new image uploaded */
+        if (!empty($_FILES['image']['name'])) {
+
+            $allowed = ['jpg','jpeg','png','gif'];
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+
+            if (!in_array($ext, $allowed)) {
+                $error = "Invalid image type.";
+            } else {
+
+                /* Delete old image if not placeholder */
+                if ($task['image_name'] !== "placeholder.png" && !empty($task['image_name'])) {
+                    $oldPath = "images/" . $task['image_name'];
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+
+                /* Upload new image */
+                $image_name = time() . "_" . basename($_FILES['image']['name']);
+                move_uploaded_file($_FILES['image']['tmp_name'], "images/" . $image_name);
+            }
+        }
+
+        if (empty($error)) {
+
+            $stmt = $conn->prepare("
+                UPDATE tasks
+                SET title=?, details=?, category_id=?, image_name=?
+                WHERE id=?
+            ");
+
+            $stmt->bind_param("ssisi", $title, $details, $category_id, $image_name, $id);
+            $stmt->execute();
+
+            header("Location: index.php");
+            exit;
+        }
+    }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,12 +100,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <h1>Edit Task</h1>
 <a class="btn" href="index.php">Back</a>
 
-<form method="post">
+<?php if ($error): ?>
+    <p style="color:red; font-weight:bold;"><?= $error ?></p>
+<?php endif; ?>
 
+<form method="post" enctype="multipart/form-data">
+
+    <label>Title:</label>
     <input type="text" name="title"
            value="<?= htmlspecialchars($task['title']) ?>"
            required>
 
+    <label>Details:</label>
     <textarea name="details"><?= htmlspecialchars($task['details']) ?></textarea>
 
     <!-- CATEGORY DROPDOWN -->
@@ -64,20 +125,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endwhile; ?>
     </select>
 
-    <!-- IMAGE DROPDOWN -->
-    <label>Photo:</label>
-    <select name="image_name">
-        <option value="placeholder.png">Placeholder</option>
-        <option value="3d-kid.png" <?= $task['image_name']=='3d-kid.png'?'selected':'' ?>>3D Kid</option>
-        <option value="donald.png" <?= $task['image_name']=='donald.png'?'selected':'' ?>>Donald</option>
-        <option value="duck.jpeg" <?= $task['image_name']=='duck.jpeg'?'selected':'' ?>>Duck</option>
-        <option value="duck2.jpeg" <?= $task['image_name']=='duck2.jpeg'?'selected':'' ?>>Duck 2</option>
-        <option value="duck3.jpeg" <?= $task['image_name']=='duck3.jpeg'?'selected':'' ?>>Duck 3</option>
-        <option value="duck4.jpeg" <?= $task['image_name']=='duck4.jpeg'?'selected':'' ?>>Duck 4</option>
-        <option value="micky.png" <?= $task['image_name']=='micky.png'?'selected':'' ?>>Mickey</option>
-    </select>
+    <!-- CURRENT IMAGE -->
+    <label>Current Image:</label><br>
+    <img src="images/<?= htmlspecialchars($task['image_name']) ?>"
+         width="120"
+         style="border-radius:8px;"><br><br>
 
-    <button type="submit">Update</button>
+    <!-- IMAGE UPLOAD -->
+    <label>Change Image:</label>
+    <input type="file" name="image">
+
+    <button type="submit">Update Task</button>
 
 </form>
 

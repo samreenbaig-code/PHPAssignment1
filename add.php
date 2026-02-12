@@ -1,5 +1,11 @@
 <?php
 include "db.php";
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
 /* GET categories for dropdown */
 $categories = $conn->query("SELECT * FROM categories ORDER BY name");
