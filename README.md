@@ -40,4 +40,61 @@ How to run:
 1. Import phpassignment1.sql into phpMyAdmin
 2. Place project in htdocs
 3. Open http://localhost/PHPAssignment1
+  ## 🚀 Assignment 4 Updates
+#🔐 Authentication System
+
+User registration with password hashing (password_hash)
+
+User login with password_verify
+
+Session-based authentication
+
+Logout functionality
+
+Protected pages (redirect if not logged in)
+
+## 🖼 Image Management
+
+Automatically deletes old image when updating a task
+
+Deletes image file when task is removed
+
+Placeholder image is never deleted
+
+## 🛡 Security Improvements
+
+Prepared statements (MySQLi)
+
+Input validation and sanitization
+
+Required field validation
+
+Duplicate email prevention
+
+Protected against SQL injection
+
+## 🔍 Additional Features
+
+Search functionality (search by task title)
+
+Foreign key relationship between tasks and categories
+
+Clean UI improvements
+
+## ⭐ OPTIONAL (For Extra Marks)
+
+Add this too:
+
+## 🗄 Database Structure
+Users Table
+
+id (INT, Primary Key)
+
+name (VARCHAR)
+
+email (UNIQUE)
+
+password (Hashed)
+
+created_at (Timestamp)
 
