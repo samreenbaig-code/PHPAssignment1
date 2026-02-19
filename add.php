@@ -1,37 +1,82 @@
 <?php
-include "db.php";
 session_start();
+include "db.php";
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 
-/* GET categories for dropdown */
+$error = "";
+
+/* Load categories */
 $categories = $conn->query("SELECT * FROM categories ORDER BY name");
 
+/* Load tags */
+$allTags = $conn->query("SELECT * FROM tags ORDER BY name");
+
+/* Handle form submit */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $title = trim($_POST['title']);
     $details = trim($_POST['details']);
-    $imageName = $_POST['image_name'] ?? 'placeholder.png';
     $category_id = $_POST['category_id'];
+    $image_name = "placeholder.png";
 
-    if ($title !== "") {
+    if (empty($title) || empty($category_id)) {
+        $error = "Title and Category are required.";
+    } else {
 
-        $stmt = $conn->prepare(
-            "INSERT INTO tasks (title, details, image_name, category_id)
-             VALUES (?, ?, ?, ?)"
-        );
+        /* Image upload */
+        if (!empty($_FILES['image']['name'])) {
 
-        $stmt->bind_param("sssi", $title, $details, $imageName, $category_id);
-        $stmt->execute();
+            $allowed = ['jpg','jpeg','png','gif'];
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
 
-        header("Location: index.php");
-        exit;
+            if (!in_array($ext, $allowed)) {
+                $error = "Invalid image type.";
+            } elseif ($_FILES['image']['size'] > 2 * 1024 * 1024) {
+                $error = "Image must be less than 2MB.";
+            } else {
+                $image_name = time() . "_" . basename($_FILES['image']['name']);
+                move_uploaded_file($_FILES['image']['tmp_name'], "images/" . $image_name);
+            }
+        }
+
+        if (empty($error)) {
+
+            /* Insert task */
+            $stmt = $conn->prepare("
+                INSERT INTO tasks (title, details, category_id, image_name)
+                VALUES (?, ?, ?, ?)
+            ");
+
+            $stmt->bind_param("ssis", $title, $details, $category_id, $image_name);
+            $stmt->execute();
+
+            $task_id = $stmt->insert_id;
+
+            /* Insert tags */
+            if (!empty($_POST['tags'])) {
+                foreach ($_POST['tags'] as $tag_id) {
+
+                    $stmtTag = $conn->prepare("
+                        INSERT INTO task_tags (task_id, tag_id)
+                        VALUES (?, ?)
+                    ");
+
+                    $stmtTag->bind_param("ii", $task_id, $tag_id);
+                    $stmtTag->execute();
+                }
+            }
+
+            header("Location: index.php");
+            exit;
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,13 +88,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <h1>Add Task</h1>
 <a class="btn" href="index.php">Back</a>
 
-<form method="post">
+<?php if ($error): ?>
+    <p style="color:red; font-weight:bold;"><?= $error ?></p>
+<?php endif; ?>
 
-    <input type="text" name="title" placeholder="Task title" required>
+<form method="post" enctype="multipart/form-data">
 
-    <textarea name="details" placeholder="Task details"></textarea>
+    <label>Title:</label>
+    <input type="text" name="title" required>
 
-    <!-- CATEGORY DROPDOWN -->
+    <label>Details:</label>
+    <textarea name="details"></textarea>
+
     <label>Category:</label>
     <select name="category_id" required>
         <option value="">Select Category</option>
@@ -60,20 +110,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endwhile; ?>
     </select>
 
-    <!-- IMAGE DROPDOWN -->
-    <label>Photo:</label>
-    <select name="image_name">
-        <option value="placeholder.png">Placeholder</option>
-        <option value="3d-kid.png">3D Kid</option>
-        <option value="donald.png">Donald Duck</option>
-        <option value="duck.jpeg">Duck</option>
-        <option value="duck2.jpeg">Duck 2</option>
-        <option value="duck3.jpeg">Duck 3</option>
-        <option value="duck4.jpeg">Duck 4</option>
-        <option value="micky.png">Mickey</option>
-    </select>
+    <label>Upload Image:</label>
+    <input type="file" name="image">
 
-    <button type="submit">Save</button>
+    <label>Tags:</label><br>
+
+    <?php while($tag = $allTags->fetch_assoc()): ?>
+        <label>
+            <input type="checkbox"
+                   name="tags[]"
+                   value="<?= $tag['id'] ?>">
+            <?= htmlspecialchars($tag['name']) ?>
+        </label><br>
+    <?php endwhile; ?>
+
+    <br>
+    <button type="submit">Save Task</button>
 
 </form>
 

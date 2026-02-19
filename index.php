@@ -72,6 +72,8 @@ if (!empty($search)) {
     <th>Category</th>
     <th>Photo</th>
     <th>Actions</th>
+    <th>Tags</th>
+
   </tr>
 
 <?php while ($row = $result->fetch_assoc()): ?>
@@ -81,15 +83,56 @@ if (!empty($search)) {
   <td><?= htmlspecialchars($row['details']) ?></td>
   <td><?= htmlspecialchars($row['category_name']) ?></td>
 
-  <td>
-    <img src="images/<?= htmlspecialchars($row['image_name']) ?>" width="80">
-  </td>
+<td>
+<?php
+echo "<pre>";
+print_r($row['image_name']);
+echo "</pre>";
+
+$imagePath = "images/" . $row['image_name'];
+$fullPath = __DIR__ . "/" . $imagePath;
+
+if (empty($row['image_name']) || !file_exists($fullPath)) {
+    $imagePath = "images/placeholder.png";
+}
+?>
+<img src="<?= htmlspecialchars($imagePath) ?>" width="80">
+</td>
+
+
+
+
 
   <td>
     <a href="task_detail.php?id=<?= $row['id']; ?>">View</a> |
     <a href="edit.php?id=<?= $row['id']; ?>">Edit</a> |
     <a href="delete.php?id=<?= $row['id']; ?>">Delete</a>
   </td>
+
+  <!-- ✅ TAGS COLUMN INSIDE ROW -->
+  <td>
+  <?php
+  $tagQuery = $conn->prepare("
+      SELECT tags.name
+      FROM tags
+      JOIN task_tags ON tags.id = task_tags.tag_id
+      WHERE task_tags.task_id = ?
+  ");
+
+  $tagQuery->bind_param("i", $row['id']);
+  $tagQuery->execute();
+  $tagResult = $tagQuery->get_result();
+
+  while($tag = $tagResult->fetch_assoc()) {
+      echo "<span style='background:#3498db;color:white;
+            padding:4px 8px;border-radius:6px;margin-right:5px;
+            font-size:12px;'>"
+            . htmlspecialchars($tag['name']) .
+            "</span>";
+  }
+  ?>
+  </td>
+
 </tr>
 <?php endwhile; ?>
 
