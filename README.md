@@ -98,3 +98,26 @@ password (Hashed)
 
 created_at (Timestamp)
 
+## Assignment 5 Enhancements
+
+New Features Added:
+
+1. Tags System (Many-to-Many Relationship)
+   - Created tags table
+   - Created task_tags association table
+   - Implemented tag checkboxes in add/edit
+   - Display tags as styled badges in index
+
+2. Improved Database Design
+   - Added proper foreign keys
+   - Designed ERD with relationships
+
+3. Security Improvements
+   - Prepared statements
+   - Password hashing
+   - Session protection
+
+4. UI Enhancements
+   - Clean layout
+   - Styled tag badges
+   - Professional form design
